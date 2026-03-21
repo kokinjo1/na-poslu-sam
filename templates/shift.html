@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{ result_id[1] }}</title>
+        <title>Na poslu sam</title>
     </head>
     <body>
         <h1>{{ result_id[1] }}</h1>
         <ul>
             {% for shift in result_shifts %}
-                <li>{{ shift[1] }}</li>
+                <li><a href="{{ url_for('pin', employee_id=result_id[0], shift_id=shift[0]) }}">{{ shift[1] }}</a></li>
             {% endfor %}
         </ul>
     </body>

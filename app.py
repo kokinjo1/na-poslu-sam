@@ -30,6 +30,17 @@ def employee(employee_id):
     connection.close()
     return render_template("shift.html", result_id=result_id, result_shifts=result_shifts)
 
+@app.route("/employee/<int:employee_id>/shift/<int:shift_id>")
+def pin(employee_id, shift_id):
+    connection = sqlite3.connect("naposlusam.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM employees WHERE id=?", (employee_id,))
+    result_id = cursor.fetchone()
+    cursor.execute("SELECT * FROM shifts WHERE id= ?", (shift_id,))
+    result_shift = cursor.fetchone()
+    connection.close()
+    return render_template("pin.html", result_shift=result_shift, result_id=result_id)
+
 
 
 if __name__ == "__main__":
