@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Na poslu sam</title>
+    </head>
+    <body>
+        <ul>
+            {% for department, employees in list_of_employees.items() %}
+                <h2>{{ department }}</h2>
+                {% for employee in employees %}
+                    <li><a href="{{ url_for('employee', employee_id=employee[0]) }}">{{ employee[1] }}</a></li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </body>
+</html>
