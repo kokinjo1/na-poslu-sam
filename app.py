@@ -40,16 +40,26 @@ def pin(employee_id, shift_id):
     result_id = cursor.fetchone()
     cursor.execute("SELECT * FROM shifts WHERE id= ?", (shift_id,))
     result_shift = cursor.fetchone()
+    cursor.execute("SELECT * FROM check_ins WHERE employee_id = ? AND check_out IS NULL", (employee_id,))
+    result_check_out = cursor.fetchone()
     connection.close()
     if request.method == "POST":
         pin = request.form["pin"]
         if pin == result_id[4]:
-            connection = sqlite3.connect("naposlusam.db")
-            cursor = connection.cursor()
-            cursor.execute("INSERT INTO check_ins (employee_id, shift_id, check_in) VALUES(?, ?, ?)", (employee_id[1], shift_id[1], datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-            connection.commit()
-            connection.close()
-            return "Uspešna prijava"
+            if result_check_out == None:
+                connection = sqlite3.connect("naposlusam.db")
+                cursor = connection.cursor()
+                cursor.execute("INSERT INTO check_ins (employee_id, shift_id, check_in) VALUES(?, ?, ?)", (employee_id, shift_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                connection.commit()
+                connection.close()
+                return "Uspešna prijava"
+            elif result_check_out != None:
+                connection = sqlite3.connect("naposlusam.db")
+                cursor = connection.cursor()
+                cursor.execute("UPDATE check_ins SET check_out = ? WHERE id = ?", (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), result_check_out[0]))
+                connection.commit()
+                connection.close()
+                return "Uspešna odjava"
         else:
             return "Pogresan PIN"
     else:
