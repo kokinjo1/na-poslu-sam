@@ -52,14 +52,19 @@ def pin(employee_id, shift_id):
                 cursor.execute("INSERT INTO check_ins (employee_id, shift_id, check_in) VALUES(?, ?, ?)", (employee_id, shift_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 connection.commit()
                 connection.close()
-                return render_template("confirmation.html", message = "Uspešna prijava. Srećan rad!")
-            elif result_check_out != None:
+                shift_start = datetime.strptime(result_shift[2], "%H:%M")
+                current_time = datetime.strptime(datetime.now().strftime("%H:%M"), "%H:%M")
+                if shift_start < current_time:
+                    return render_template("confirmation.html", message = "Uspešna prijava. Kašnjenje je zabeleženo i biće prosleđeno nadležnima.")
+                else:
+                    return render_template("confirmation.html", message = "Uspešna prijava. Prijavljeni ste na smenu.")
+            else:
                 connection = sqlite3.connect("naposlusam.db")
                 cursor = connection.cursor()
                 cursor.execute("UPDATE check_ins SET check_out = ? WHERE id = ?", (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), result_check_out[0]))
                 connection.commit()
                 connection.close()
-                return render_template("confirmation.html", message = "Uspešna odjava. Hvala vam na današnjem zalaganju!")
+                return render_template("confirmation.html", message = "Uspešna odjava. Vaše radno vreme je zabeleženo.")
         else:
             return render_template("pin.html", result_shift=result_shift, result_id=result_id, error="Pogrešan PIN")
     else:
