@@ -52,16 +52,16 @@ def pin(employee_id, shift_id):
                 cursor.execute("INSERT INTO check_ins (employee_id, shift_id, check_in) VALUES(?, ?, ?)", (employee_id, shift_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 connection.commit()
                 connection.close()
-                return "Uspešna prijava"
+                return render_template("confirmation.html", message = "Uspešna prijava. Srećan rad!")
             elif result_check_out != None:
                 connection = sqlite3.connect("naposlusam.db")
                 cursor = connection.cursor()
                 cursor.execute("UPDATE check_ins SET check_out = ? WHERE id = ?", (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), result_check_out[0]))
                 connection.commit()
                 connection.close()
-                return "Uspešna odjava"
+                return render_template("confirmation.html", message = "Uspešna odjava. Hvala vam na današnjem zalaganju!")
         else:
-            return "Pogresan PIN"
+            return render_template("pin.html", result_shift=result_shift, result_id=result_id, error="Pogrešan PIN")
     else:
         return render_template("pin.html", result_shift=result_shift, result_id=result_id)
 

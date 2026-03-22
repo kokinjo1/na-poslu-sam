@@ -11,5 +11,8 @@
             <input type="password" name="pin" placeholder="Unesite vaš PIN" required>
             <button type="submit">Potvrdi</button>
         </form>
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
     </body>
 </html>
