@@ -6,6 +6,10 @@
     <body>
         <h1>{{ result_id[1]}}</h1>
         <h1>{{ result_shift[1]}}</h1>
-        <p>Unesite PIN</p>
+        <form action="" method="POST">
+            <label for="pin">PIN:</label>
+            <input type="password" name="pin" placeholder="Unesite vaš PIN" required>
+            <button type="submit">Potvrdi</button>
+        </form>
     </body>
 </html>
