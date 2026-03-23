@@ -52,8 +52,8 @@ def pin(employee_id, shift_id):
                 cursor.execute("INSERT INTO check_ins (employee_id, shift_id, check_in) VALUES(?, ?, ?)", (employee_id, shift_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 connection.commit()
                 connection.close()
-                shift_start = datetime.strptime(result_shift[2], "%H:%M")
-                current_time = datetime.strptime(datetime.now().strftime("%H:%M"), "%H:%M")
+                shift_start = datetime.strptime(result_shift[2], "%H:%M").time()
+                current_time = datetime.now().time()
                 if shift_start < current_time:
                     return render_template("confirmation.html", message = "Uspešna prijava. Kašnjenje je zabeleženo i biće prosleđeno nadležnima.")
                 else:
