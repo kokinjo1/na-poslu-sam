@@ -4,13 +4,45 @@
         <title>Na poslu sam</title>
     </head>
     <body>
-        <ul>
-            {% for department, employees in list_of_employees.items() %}
+        <input type="search" id = "search" name="search_bar" placeholder="Pretražite vaše ime...">
+        {% for department, employees in list_of_employees.items() %}
+            <div>
                 <h2>{{ department }}</h2>
-                {% for employee in employees %}
-                    <li><a href="{{ url_for('employee', employee_id=employee[0]) }}">{{ employee[1] }}</a></li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
+                <ul>
+                    {% for employee in employees %}
+                        <li><a href="{{ url_for('employee', employee_id=employee[0]) }}">{{ employee[1] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+        <script>
+            var search_bar = document.getElementById("search")
+            search_bar.addEventListener("input", function(){
+                search_bar_value = search_bar.value
+                employee_list = document.querySelectorAll("li")
+                employee_list.forEach(function(employee) {
+                    if (employee.textContent.toLowerCase().includes(search_bar_value.toLowerCase())) {
+                        employee.style.display = ""
+                    }else {
+                        employee.style.display = "none"
+                    }
+                })
+                var box = document.querySelectorAll("div")
+                box.forEach(function(department) {
+                    var count = 0
+                    box_list = department.querySelectorAll("li")
+                    box_list.forEach(function(box_in_the_list) {
+                        if (box_in_the_list.style.display != "none") {
+                            count = count + 1
+                        }
+                    })
+                    if (count > 0) {
+                        department.style.display = ""
+                    }else {
+                        department.style.display = "none"
+                    }
+                })
+            }) 
+        </script>
     </body>
 </html>
