@@ -12,6 +12,7 @@ def index():
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM employees ORDER BY department")
     result = cursor.fetchall()
+    message = request.args.get("message")
     employees_by_departments = {}
     for employee in result:
        if employee[2] in employees_by_departments:
@@ -19,7 +20,7 @@ def index():
        else:
            employees_by_departments[employee[2]] = [(employee[0], employee[1])]
     connection.close()
-    return render_template("index.html", list_of_employees = employees_by_departments)
+    return render_template("index.html", list_of_employees = employees_by_departments, message=message)
 
 @app.route("/employee/<int:employee_id>")
 def employee(employee_id):
@@ -55,16 +56,16 @@ def pin(employee_id, shift_id):
                 shift_start = datetime.strptime(result_shift[2], "%H:%M").time()
                 current_time = datetime.now().time()
                 if shift_start < current_time:
-                    return render_template("confirmation.html", message = "Uspešna prijava. Kašnjenje je zabeleženo i biće prosleđeno nadležnima.")
+                    return redirect(url_for("index", message="Uspešna prijava. Kašnjenje je zabeleženo i biće prosleđeno nadležnim licima."))
                 else:
-                    return render_template("confirmation.html", message = "Uspešna prijava. Prijavljeni ste na smenu.")
+                    return redirect(url_for("index", message="Uspešna prijava. Prijavili ste se za vašu smenu!"))
             else:
                 connection = sqlite3.connect("naposlusam.db")
                 cursor = connection.cursor()
                 cursor.execute("UPDATE check_ins SET check_out = ? WHERE id = ?", (datetime.now().strftime("%Y-%m-%d %H:%M:%S"), result_check_out[0]))
                 connection.commit()
                 connection.close()
-                return render_template("confirmation.html", message = "Uspešna odjava. Vaše radno vreme je zabeleženo.")
+                return redirect(url_for("index", message= "Uspešna odjava. Vaše radno vreme je zabeleženo."))
         else:
             return render_template("pin.html", result_shift=result_shift, result_id=result_id, error="Pogrešan PIN")
     else:

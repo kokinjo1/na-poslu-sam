@@ -15,7 +15,15 @@
                 </ul>
             </div>
         {% endfor %}
+        {% if message %}
+            <p id="message"> {{ message }} </p>
+        {% endif %}
         <script>
+            var message = document.getElementById("message")
+            if (message) {
+                setTimeout(function() {
+                    message.style.display = "none"    
+                }, 5000)}
             var search_bar = document.getElementById("search")
             search_bar.addEventListener("input", function(){
                 search_bar_value = search_bar.value
