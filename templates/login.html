@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Na poslu sam - Admin log in</title>
+    </head>
+    <body>
+        {% if error %}
+            {{ error }}
+        {% endif %}
+        <form action="/admin/login" method="POST">
+            <input type="text" name="username" placeholder="Unesite korisničko vaše ime...">
+            <input type="password" name="password" placeholder="Unesite vašu šifru...">
+            <button type="submit">Uloguj se</button>
+        </form>
+    </body>
+</html>

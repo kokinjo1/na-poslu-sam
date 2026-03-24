@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 connection = sqlite3.connect("naposlusam.db")
 cursor = connection.cursor()
@@ -35,6 +36,11 @@ employees = [
 
 for employee in employees:
     cursor.execute("INSERT INTO employees (name, department, position, pin) VALUES(?, ?, ?, ?)", employee)
+
+cursor.execute("INSERT INTO admins (username, password) VALUES (?, ?)", ("bogdankoroman", generate_password_hash("bogdan_koroman_123")))
+
+cursor.execute("SELECT * FROM admins")
+print(cursor.fetchall())
 
 connection.commit()
 connection.close()

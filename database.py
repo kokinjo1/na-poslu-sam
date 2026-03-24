@@ -34,6 +34,14 @@ cursor.execute("""
     )
 """)
 
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS admins(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        password TEXT NOT NULL
+    )
+""")
+
 connection.commit()
 connection.close()
 

@@ -2,9 +2,14 @@ from flask import Flask, render_template, url_for, request, redirect
 
 import sqlite3
 
+from flask import session
+
+from werkzeug.security import check_password_hash
+
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = "domzdravlja_tajni_kljuc"
 
 @app.route("/")
 def index():
@@ -21,6 +26,15 @@ def index():
            employees_by_departments[employee[2]] = [(employee[0], employee[1])]
     connection.close()
     return render_template("index.html", list_of_employees = employees_by_departments, message=message)
+
+@app.route("/admin")
+def admin():
+    username=session.get("name")
+    if username:
+        return render_template("admin.html")
+    else:
+        return redirect(url_for('admin_login'))
+    
 
 @app.route("/employee/<int:employee_id>")
 def employee(employee_id):
@@ -70,6 +84,33 @@ def pin(employee_id, shift_id):
             return render_template("pin.html", result_shift=result_shift, result_id=result_id, error="Pogrešan PIN")
     else:
         return render_template("pin.html", result_shift=result_shift, result_id=result_id)
+    
+@app.route("/admin/login", methods=["POST", "GET"])
+def admin_login():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        connection = sqlite3.connect("naposlusam.db")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM admins WHERE username= ?", (username,))
+        admin = cursor.fetchone()
+        connection.close()
+        if admin:
+            password_check = check_password_hash(admin[2], password)
+            if password_check == True:
+                session['name'] = username
+                return redirect(url_for('admin'))
+            else:
+                return render_template("login.html", error="Pogrešna lozinka. Pokušajte ponovo!")
+        else:
+            return render_template("login.html", error="Ne postoji admin pod unetim korisničkim imenom. Unesite tačno korisničko ime!")
+    else:
+        return render_template("login.html")
+    
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop('name', None)
+    return redirect(url_for('admin_login'))
 
 if __name__ == "__main__":
     app.run(debug=True)
