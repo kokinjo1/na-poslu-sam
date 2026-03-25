@@ -15,7 +15,7 @@ app.secret_key = "domzdravlja_tajni_kljuc"
 def index():
     connection = sqlite3.connect("naposlusam.db")
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM employees ORDER BY department")
+    cursor.execute("SELECT * FROM employees WHERE active = 1 ORDER BY department")
     result = cursor.fetchall()
     message = request.args.get("message")
     employees_by_departments = {}
@@ -112,5 +112,69 @@ def admin_logout():
     session.pop('name', None)
     return redirect(url_for('admin_login'))
 
+@app.route("/admin/employees", methods=["POST", "GET"])
+def admin_employees():
+    username=session.get("name")
+    if not username:
+        return redirect(url_for('admin_login'))
+    connection = sqlite3.connect("naposlusam.db")
+    cursor = connection.cursor()
+    if request.method == "POST":
+        name = request.form["name"]
+        department = request.form["department"]
+        position = request.form["position"]
+        pin = request.form["pin"]
+        cursor.execute("INSERT INTO employees (name, department, position, pin) VALUES(?, ?, ?, ?)", (name, department, position, pin))
+        connection.commit()
+        connection.close()
+        return redirect(url_for('admin_employees'))
+    else:
+        cursor.execute("SELECT * FROM employees WHERE active = 1 ORDER BY department")
+        employees = cursor.fetchall()
+        message = request.args.get("message")
+        employees_by_departments = {}
+        for employee in employees:
+            if employee[2] in employees_by_departments:
+                employees_by_departments[employee[2]].append( (employee[0], employee[1], employee[3]))
+            else:
+                employees_by_departments[employee[2]] = [(employee[0], employee[1], employee[3])]
+        connection.close()
+        return render_template("employees.html", employees_by_departments=employees_by_departments, message=message)
+
+@app.route("/admin/employees/delete/<int:employee_id>", methods=["POST"])
+def admin_employees_delete(employee_id):
+    username=session.get("name")
+    if not username:
+        return redirect(url_for('admin_login'))
+    connection = sqlite3.connect("naposlusam.db")
+    cursor = connection.cursor()
+    cursor.execute("UPDATE employees SET active = 0 WHERE ID = ?", (employee_id,))
+    connection.commit()
+    connection.close()
+    return redirect(url_for('admin_employees'))
+
+@app.route("/admin/employees/edit/<int:employee_id>", methods=["POST", "GET"])
+def admin_employees_edit(employee_id):
+    username = session.get("name")
+    if not username:
+        return redirect(url_for('admin_login'))
+    connection = sqlite3.connect("naposlusam.db")
+    cursor = connection.cursor()
+    if request.method == "GET":
+        cursor.execute("SELECT * FROM employees WHERE id = ?", (employee_id,))
+        employee = cursor.fetchone()
+        connection.close()
+        return render_template("edit_employee.html", employee=employee)
+    else:
+        name = request.form["name"]
+        department = request.form["department"]
+        position = request.form["position"]
+        pin = request.form["pin"]
+        cursor.execute("UPDATE employees SET name = ?, department = ?, position = ?, pin = ? WHERE id = ?", (name, department, position, pin, employee_id))
+        connection.commit()
+        connection.close()
+        return redirect(url_for('admin_employees', message="Uspešno ste ažurirali podatke zaposlenog."))
+    
 if __name__ == "__main__":
     app.run(debug=True)
+

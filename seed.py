@@ -29,15 +29,15 @@ for shift in shifts:
     cursor.execute("INSERT INTO shifts (name, start_time, end_time) VALUES(?, ?, ?)", shift)
 
 employees = [
-    ("Bogdan Koroman", "Specijalističke službe", "Direktor", "1234"),
-    ("Mina Marinkovic", "Opšta praksa", "Doktor", "5678"),
-    ("Miljana Koroman", "Stomatologija", "Stomatolog", "0012")
+    ("Bogdan Koroman", "Specijalističke službe", "Direktor", "0602"),
+    ("Mina Marinkovic", "Specijalističke službe", "Računovođa", "1234"),
+    ("Miljana Koroman", "Specijalističke službe", "Sekretarica", "2302")
 ]
 
 for employee in employees:
     cursor.execute("INSERT INTO employees (name, department, position, pin) VALUES(?, ?, ?, ?)", employee)
 
-cursor.execute("INSERT INTO admins (username, password) VALUES (?, ?)", ("bogdankoroman", generate_password_hash("bogdan_koroman_123")))
+cursor.execute("INSERT INTO admins (username, password) VALUES (?, ?)", ("bogdankoroman", generate_password_hash("bogdankoroman123")))
 
 cursor.execute("SELECT * FROM admins")
 print(cursor.fetchall())

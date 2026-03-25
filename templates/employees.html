@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Na poslu sam - Zaposleni</title>
+    </head>
+    <body>
+        <h1>Zaposleni</h1>
+        {% if message %}
+            <p id="message"> {{ message }} </p>
+        {% endif %}
+        <a href="{{ url_for('admin') }}">Vrati se na početnu stranicu</a>
+        <form action="/admin/employees" method="POST">
+            <label>Ime i prezime:</label><input type="text" name="name" placeholder="npr. Marko Marković">
+            <label>Organizaciona jedinica:</label><input type="text" name="department" placeholder="npr. Opšta praksa">
+            <label>Pozicija:</label><input type="text" name="position" placeholder="npr. Doktor">
+            <label>PIN:</label><input type="text" name="pin" placeholder="max. 4 cifre">
+            <button type="submit">Dodaj zaposlenog</button>
+        </form>
+        {% for department, employees in employees_by_departments.items() %}
+            <div>
+                <h2>{{ department }}</h2>
+                <ul>
+                    {% for employee in employees %}
+                        <li>
+                            {{ employee[1] }} - {{ employee[2] }}
+                            <form action="{{ url_for('admin_employees_delete', employee_id=employee[0]) }}" method="POST">
+                                <a href="{{ url_for('admin_employees_edit', employee_id=employee[0]) }}">Izmeni podatke zaposlenog</a>
+                                <button type="submit">Izbriši zaposlenog</button>
+                            </form>
+                        </li>
+                    {% endfor %}  
+                </ul>
+            </div>
+        {% endfor %}
+        <script>
+            var message = document.getElementById("message")
+            if (message) {
+                setTimeout(function() {
+                    message.style.display = "none"    
+                }, 5000)}
+        </script> 
+    </body>
+</html>

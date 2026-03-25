@@ -9,7 +9,8 @@ cursor.execute("""
         name TEXT NOT NULL,
         department TEXT NOT NULL,
         position TEXT NOT NULL,
-        pin TEXT NOT NULL   
+        pin TEXT NOT NULL,
+        active INTEGER NOT NULL DEFAULT 1
     )
 """)
 
