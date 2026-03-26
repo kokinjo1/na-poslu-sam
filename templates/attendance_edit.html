@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Na poslu sam - Evidencija</title>
+    </head>
+    <body>
+        <form action="{{ url_for('admin_attendance_edit', check_ins_id=check_in_row[5]) }}" method="POST">
+            <p><strong>Ime i prezime:</strong> {{ check_in_row[0] }}</p>
+            <p><strong>Organizaciona jedinica:</strong> {{ check_in_row[1] }}</p>
+            <p><strong>Smena:</strong> {{ check_in_row[2] }}</p>
+            <label>Vreme dolaska:</label><input type="text" name="check_in" value="{{ check_in_row[3] }}">
+            <label>Vreme odlaska:</label><input type="text" name="check_out" value="{{ check_in_row[4] }}">
+            <button type="submit">Sačuvaj izmene</button>
+            <a href="{{ url_for('admin_attendance') }}">Otkaži</a>
+        </form>
+    </body>
+</html>

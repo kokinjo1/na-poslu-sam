@@ -4,7 +4,7 @@
         <title>Na poslu sam - Zaposleni</title>
     </head>
     <body>
-        <form action="{{ url_for('admin_employees_edit', employee_id=employee[0]) }}" method="POST">
+        <form action="{{ url_for('admin_employees_edit', check_ins_id=row[0]) }}" method="POST">
             <label>Ime i prezime:</label><input type="text" name="name" value="{{ employee[1] }}">
             <label>Organizaciona jedinica:</label><input type="text" name="department" value="{{ employee[2] }}">
             <label>Pozicija:</label><input type="text" name="position" value="{{ employee[3] }}">

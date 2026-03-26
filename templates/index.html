@@ -15,6 +15,7 @@
                     {% for employee in employees %}
                         <li><a href="{{ url_for('employee', employee_id=employee[0]) }}">{{ employee[1] }}</a></li>
                     {% endfor %}
+        {% endfor %}
                 </ul>
             </div>
         <script>

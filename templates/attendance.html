@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Na poslu sam - Evidencija</title>
+    </head>
+    <body>
+        <form action="/admin/attendance" method="GET">
+            <input type="date" name="date">
+            <button type="submit">Potvrdi</button>
+        </form>
+        {% if date_pattern %}
+            {% for row in table %}
+                <li>Ime i prezime:{{ row[1] }} Organizaciona jedinica:{{ row[2] }} Pozicija:{{ row[3] }} Smena: {{ row[4] }} Vreme dolaska:{{ row[5] }} 
+                {% if row[6] %}
+                    Vreme odlaska: {{ row[6] }}
+                {% else %}
+                    Vreme odlaska: Nije se odjavio
+                {% endif %}
+                <a href="{{ url_for('admin_attendance_edit', check_ins_id=row[0]) }}">Izmeni</a>
+                </li>
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>

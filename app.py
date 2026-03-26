@@ -35,6 +35,28 @@ def admin():
     else:
         return redirect(url_for('admin_login'))
     
+@app.route("/admin/attendance")
+def admin_attendance():
+    username = session.get("name")
+    if not username:
+        return redirect(url_for('admin_login'))
+    date = request.args.get("date")
+    if date:
+        connection = sqlite3.connect("naposlusam.db")
+        cursor = connection.cursor()
+        date_pattern = date + "%"
+        cursor.execute("""
+            SELECT check_ins.id, employees.name, employees.department, employees.position, shifts.name, check_ins.check_in, check_ins.check_out
+            FROM check_ins
+            JOIN employees ON check_ins.employee_id = employees.id
+            JOIN shifts ON check_ins.shift_id = shifts.id
+            WHERE check_ins.check_in LIKE ?
+        """, (date_pattern,))
+        table = cursor.fetchall()
+        connection.close()
+        return render_template("attendance.html", table=table, date_pattern=date_pattern)
+    else:
+        return render_template("attendance.html")    
 
 @app.route("/employee/<int:employee_id>")
 def employee(employee_id):
@@ -175,6 +197,35 @@ def admin_employees_edit(employee_id):
         connection.close()
         return redirect(url_for('admin_employees', message="Uspešno ste ažurirali podatke zaposlenog."))
     
+
+@app.route("/admin/attendance/edit/<int:check_ins_id>", methods=["POST", "GET"])
+def admin_attendance_edit(check_ins_id):
+    username=session.get("name")
+    if not username:
+            return redirect(url_for('admin_login'))
+    if request.method == "GET":
+        connection = sqlite3.connect("naposlusam.db")
+        cursor = connection.cursor()
+        cursor.execute("""
+            SELECT employees.name, employees.department, shifts.name, check_in, check_out, check_ins.id
+            FROM check_ins
+            JOIN employees ON check_ins.employee_id = employees.id
+            JOIN shifts ON check_ins.shift_id = shifts.id
+            WHERE check_ins.id = ?
+        """, (check_ins_id,))
+        check_in_row=cursor.fetchone()
+        connection.close()
+        return render_template("attendance_edit.html", check_in_row=check_in_row)
+    else:
+        check_in=request.form["check_in"]
+        check_out=request.form["check_out"]
+        connection = sqlite3.connect("naposlusam.db")
+        cursor = connection.cursor()
+        cursor.execute("UPDATE check_ins SET check_in = ?, check_out= ? WHERE id= ?", (check_in, check_out, check_ins_id))
+        connection.commit()
+        connection.close()
+        return redirect(url_for('admin_attendance', message="Uspešno ste ažurirali evidenciju zaposlenog."))
+
 if __name__ == "__main__":
     app.run(debug=True)
 
